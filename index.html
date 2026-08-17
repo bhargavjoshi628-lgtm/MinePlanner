@@ -1,360 +1,1218 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>MinePlanner - Minecraft Companion</title>
+<title>MinePlanner | Minecraft Companion</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
 
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      background: #0b0b12;
-      color: #ffffff;
-      min-height: 100vh;
-    }
+:root{
+  --bg:#08080d;
+  --panel:#11111a;
+  --panel2:#171722;
+  --border:#29293a;
+  --purple:#a855f7;
+  --purple2:#7c3aed;
+  --text:#ffffff;
+  --muted:#9b9baa;
+  --green:#4ade80;
+}
 
-    header {
-      background: #11111c;
-      border-bottom: 1px solid #27273a;
-      padding: 18px 30px;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:
+    radial-gradient(circle at 50% -10%,#26103f 0%,transparent 40%),
+    var(--bg);
+  color:var(--text);
+  min-height:100vh;
+}
 
-    .logo {
-      font-size: 25px;
-      font-weight: 800;
-      color: #b46cff;
-    }
+/* HEADER */
 
-    .tagline {
-      color: #9999aa;
-      font-size: 13px;
-      margin-top: 4px;
-    }
+header{
+  position:sticky;
+  top:0;
+  z-index:100;
+  background:rgba(8,8,13,.92);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+}
 
-    main {
-      max-width: 1200px;
-      margin: auto;
-      padding: 45px 20px;
-    }
+.nav{
+  max-width:1250px;
+  margin:auto;
+  padding:16px 22px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+}
 
-    .hero {
-      text-align: center;
-      padding: 35px 10px 45px;
-    }
+.logo{
+  font-size:23px;
+  font-weight:900;
+  white-space:nowrap;
+}
 
-    .hero h1 {
-      font-size: clamp(36px, 7vw, 64px);
-      margin-bottom: 15px;
-    }
+.logo span{
+  color:var(--purple);
+}
 
-    .hero h1 span {
-      color: #b46cff;
-    }
+nav{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
 
-    .hero p {
-      color: #aaaabb;
-      font-size: 17px;
-      max-width: 650px;
-      margin: auto;
-      line-height: 1.6;
-    }
+nav button{
+  border:0;
+  background:transparent;
+  color:#aaaaba;
+  padding:9px 12px;
+  border-radius:9px;
+  cursor:pointer;
+  font-size:14px;
+}
 
-    .search-box {
-      max-width: 650px;
-      margin: 25px auto 0;
-      display: flex;
-    }
+nav button:hover,
+nav button.active{
+  background:#20152d;
+  color:#fff;
+}
 
-    .search-box input {
-      width: 100%;
-      padding: 15px 18px;
-      border-radius: 12px;
-      border: 1px solid #35354c;
-      background: #151522;
-      color: white;
-      font-size: 15px;
-      outline: none;
-    }
+/* MAIN */
 
-    .search-box input:focus {
-      border-color: #b46cff;
-    }
+main{
+  max-width:1250px;
+  margin:auto;
+  padding:30px 20px 70px;
+}
 
-    .section-title {
-      margin: 20px 0;
-      font-size: 25px;
-    }
+.page{
+  display:none;
+}
 
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 18px;
-    }
+.page.active{
+  display:block;
+}
 
-    .card {
-      background: #151522;
-      border: 1px solid #29293d;
-      border-radius: 18px;
-      padding: 25px;
-      min-height: 180px;
-      cursor: pointer;
-      transition: 0.2s ease;
-    }
+/* HERO */
 
-    .card:hover {
-      transform: translateY(-5px);
-      border-color: #b46cff;
-      box-shadow: 0 10px 30px rgba(180, 108, 255, 0.12);
-    }
+.hero{
+  text-align:center;
+  padding:65px 15px 45px;
+}
 
-    .icon {
-      font-size: 38px;
-      margin-bottom: 15px;
-    }
+.badge{
+  display:inline-block;
+  background:#21132d;
+  border:1px solid #4b2864;
+  color:#d8b4ff;
+  padding:7px 13px;
+  border-radius:999px;
+  font-size:12px;
+  margin-bottom:18px;
+}
 
-    .card h3 {
-      font-size: 19px;
-      margin-bottom: 8px;
-    }
+.hero h1{
+  font-size:clamp(40px,7vw,72px);
+  line-height:1;
+  margin-bottom:20px;
+}
 
-    .card p {
-      color: #9999aa;
-      line-height: 1.5;
-      font-size: 14px;
-    }
+.hero h1 span{
+  color:var(--purple);
+}
 
-    .coming {
-      margin-top: 45px;
-      padding: 25px;
-      background: #11111c;
-      border: 1px solid #29293d;
-      border-radius: 18px;
-      text-align: center;
-    }
+.hero p{
+  max-width:680px;
+  margin:auto;
+  color:var(--muted);
+  line-height:1.7;
+  font-size:16px;
+}
 
-    .coming h2 {
-      margin-bottom: 10px;
-    }
+.search{
+  max-width:650px;
+  margin:28px auto 0;
+  position:relative;
+}
 
-    .coming p {
-      color: #9999aa;
-    }
+.search input{
+  width:100%;
+  padding:16px 20px;
+  border:1px solid var(--border);
+  border-radius:13px;
+  outline:none;
+  background:#12121c;
+  color:white;
+  font-size:15px;
+}
 
-    footer {
-      text-align: center;
-      color: #666678;
-      padding: 35px 20px;
-      font-size: 13px;
-    }
+.search input:focus{
+  border-color:var(--purple);
+  box-shadow:0 0 0 3px #a855f71a;
+}
 
-    @media (max-width: 600px) {
-      header {
-        padding: 15px 18px;
-      }
+/* SECTION */
 
-      main {
-        padding: 25px 15px;
-      }
+.section-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin:30px 0 18px;
+}
 
-      .hero {
-        padding-top: 25px;
-      }
+.section-head h2{
+  font-size:25px;
+}
 
-      .cards {
-        grid-template-columns: 1fr 1fr;
-      }
+.section-head p{
+  color:var(--muted);
+  font-size:13px;
+}
 
-      .card {
-        padding: 18px;
-        min-height: 160px;
-      }
-    }
+/* FEATURE CARDS */
 
-    @media (max-width: 400px) {
-      .cards {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+.feature-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+
+.feature{
+  background:linear-gradient(145deg,#171721,#101017);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:23px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.feature:hover{
+  transform:translateY(-4px);
+  border-color:#8240bd;
+  box-shadow:0 12px 35px #0008;
+}
+
+.feature-icon{
+  width:48px;
+  height:48px;
+  display:grid;
+  place-items:center;
+  border-radius:13px;
+  background:#241531;
+  font-size:25px;
+  margin-bottom:18px;
+}
+
+.feature h3{
+  margin-bottom:8px;
+}
+
+.feature p{
+  color:var(--muted);
+  line-height:1.5;
+  font-size:14px;
+}
+
+/* BUILD GRID */
+
+.build-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+}
+
+.build-card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:18px;
+  overflow:hidden;
+  transition:.2s;
+}
+
+.build-card:hover{
+  transform:translateY(-4px);
+  border-color:#8240bd;
+}
+
+.build-thumb{
+  height:180px;
+  position:relative;
+  overflow:hidden;
+  background:#20202a;
+}
+
+/* Minecraft-style CSS thumbnails */
+
+.scene{
+  width:100%;
+  height:100%;
+  position:relative;
+  overflow:hidden;
+}
+
+.scene.sky{
+  background:linear-gradient(#64b5e8 0 60%,#6ba84a 60% 100%);
+}
+
+.scene.night{
+  background:linear-gradient(#11152d 0 65%,#263b20 65% 100%);
+}
+
+.scene.farm{
+  background:linear-gradient(#70c6ed 0 55%,#76522e 55% 100%);
+}
+
+.sun{
+  position:absolute;
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  background:#ffe066;
+  top:20px;
+  right:35px;
+}
+
+.house{
+  position:absolute;
+  width:125px;
+  height:85px;
+  left:50%;
+  bottom:25px;
+  transform:translateX(-50%);
+  background:#9b663f;
+  border:5px solid #593b29;
+}
+
+.roof{
+  position:absolute;
+  width:155px;
+  height:55px;
+  left:50%;
+  bottom:95px;
+  transform:translateX(-50%);
+  background:#5d3b25;
+  clip-path:polygon(50% 0,100% 100%,0 100%);
+}
+
+.door{
+  position:absolute;
+  width:25px;
+  height:45px;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  background:#422919;
+}
+
+.window{
+  position:absolute;
+  width:24px;
+  height:24px;
+  background:#8bd7ff;
+  border:3px solid #3e2c22;
+  bottom:30px;
+}
+
+.window.left{
+  left:15px;
+}
+
+.window.right{
+  right:15px;
+}
+
+.castle{
+  position:absolute;
+  width:170px;
+  height:95px;
+  left:50%;
+  bottom:22px;
+  transform:translateX(-50%);
+  background:#73777d;
+  border:5px solid #4b4d52;
+}
+
+.tower{
+  position:absolute;
+  width:38px;
+  height:125px;
+  bottom:20px;
+  background:#676b71;
+  border:5px solid #46484d;
+}
+
+.tower.left{
+  left:20%;
+}
+
+.tower.right{
+  right:20%;
+}
+
+.tower-top{
+  position:absolute;
+  width:48px;
+  height:18px;
+  background:#45474c;
+  top:-18px;
+  left:-10px;
+}
+
+.farm-house{
+  position:absolute;
+  width:90px;
+  height:60px;
+  left:65%;
+  bottom:35px;
+  background:#8a5935;
+  border:4px solid #573a27;
+}
+
+.crops{
+  position:absolute;
+  bottom:15px;
+  left:10%;
+  width:45%;
+  height:45px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #6b4726 0 12px,
+      #4d7c2b 12px 24px
+    );
+}
+
+/* CARD CONTENT */
+
+.build-content{
+  padding:19px;
+}
+
+.build-content h3{
+  margin-bottom:7px;
+}
+
+.build-content .desc{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.5;
+  margin-bottom:15px;
+}
+
+.materials{
+  border-top:1px solid var(--border);
+  padding-top:14px;
+}
+
+.materials-title{
+  font-size:12px;
+  color:#d4d4df;
+  margin-bottom:9px;
+}
+
+.material-list{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+}
+
+.material{
+  background:#1d1d28;
+  border:1px solid #303040;
+  border-radius:7px;
+  padding:6px 8px;
+  font-size:11px;
+  color:#c5c5d0;
+}
+
+/* TABLE / LIST */
+
+.panel{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:22px;
+}
+
+.list{
+  display:grid;
+  gap:10px;
+}
+
+.list-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px;
+  background:#171720;
+  border:1px solid #262633;
+  border-radius:12px;
+}
+
+.list-item input{
+  width:18px;
+  height:18px;
+  accent-color:var(--purple);
+}
+
+.list-item span{
+  color:#ddd;
+}
+
+/* RECIPE */
+
+.recipe-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+
+.recipe{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:20px;
+}
+
+.recipe-icon{
+  font-size:38px;
+  margin-bottom:12px;
+}
+
+.recipe p{
+  color:var(--muted);
+  font-size:13px;
+  margin-top:8px;
+  line-height:1.5;
+}
+
+/* CHALLENGE */
+
+.challenge{
+  max-width:750px;
+  margin:35px auto;
+  text-align:center;
+  padding:50px 25px;
+  background:linear-gradient(145deg,#1c1028,#11111a);
+  border:1px solid #45245d;
+  border-radius:22px;
+}
+
+.challenge-icon{
+  font-size:55px;
+  margin-bottom:15px;
+}
+
+.challenge h2{
+  font-size:30px;
+  margin-bottom:12px;
+}
+
+.challenge p{
+  color:var(--muted);
+  line-height:1.6;
+}
+
+/* SEEDS */
+
+.seed{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  align-items:center;
+}
+
+.seed-code{
+  font-family:monospace;
+  color:#d8b4ff;
+  background:#21162c;
+  padding:8px 10px;
+  border-radius:8px;
+  font-size:12px;
+}
+
+/* EMPTY */
+
+.no-results{
+  display:none;
+  text-align:center;
+  color:var(--muted);
+  padding:35px;
+}
+
+/* FOOTER */
+
+footer{
+  border-top:1px solid var(--border);
+  padding:30px 20px;
+  text-align:center;
+  color:#666675;
+  font-size:12px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:900px){
+  .feature-grid,
+  .build-grid,
+  .recipe-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .nav{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  nav{
+    justify-content:flex-start;
+  }
+}
+
+@media(max-width:600px){
+  main{
+    padding:20px 14px 50px;
+  }
+
+  .hero{
+    padding:45px 5px 35px;
+  }
+
+  .feature-grid,
+  .build-grid,
+  .recipe-grid{
+    grid-template-columns:1fr;
+  }
+
+  .section-head{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .build-thumb{
+    height:200px;
+  }
+}
+</style>
 </head>
 
 <body>
 
-  <header>
-    <div class="logo">⛏️ MinePlanner</div>
-    <div class="tagline">Your Minecraft Companion</div>
-  </header>
+<header>
+  <div class="nav">
 
-  <main>
-
-    <section class="hero">
-      <h1>Plan Your <span>Minecraft</span> World</h1>
-
-      <p>
-        Build smarter, survive longer and keep your Minecraft journey organized
-        with MinePlanner.
-      </p>
-
-      <div class="search-box">
-        <input
-          type="text"
-          id="searchInput"
-          placeholder="🔎 Search builds, crafting, survival..."
-        >
-      </div>
-    </section>
-
-    <h2 class="section-title">Explore MinePlanner</h2>
-
-    <section class="cards" id="cards">
-
-      <a href="#builds" class="card" data-name="build ideas" style="text-decoration:none;color:inherit;">
-  <div class="icon">🏰</div>
-  <h3>Build Ideas</h3>
-  <p>
-    Find awesome Minecraft builds with material lists and ideas.
-  </p>
-</a>
-
-      <div class="card" data-name="crafting guide">
-        <div class="icon">🛠️</div>
-        <h3>Crafting Guide</h3>
-        <p>
-          Quickly find crafting recipes and required materials.
-        </p>
-      </div>
-
-      <div class="card" data-name="survival checklist">
-        <div class="icon">✅</div>
-        <h3>Survival Checklist</h3>
-        <p>
-          Track your progress from your first night to late-game survival.
-        </p>
-      </div>
-
-      <div class="card" data-name="daily challenge">
-        <div class="icon">🎯</div>
-        <h3>Daily Challenge</h3>
-        <p>
-          Get a new Minecraft challenge and test your survival skills.
-        </p>
-      </div>
-
-      <div class="card" data-name="seed collection">
-        <div class="icon">🌱</div>
-        <h3>Seed Collection</h3>
-        <p>
-          Save interesting Minecraft seeds and keep them organized.
-        </p>
-      </div>
-
-      <div class="card" data-name="materials">
-        <div class="icon">📦</div>
-        <h3>Materials</h3>
-        <p>
-          Check the materials needed for different builds and projects.
-        </p>
-      </div>
-
-    </section>
-
-    <section class="coming">
-      <h2>🚀 More Features Coming</h2>
-      <p>
-        MinePlanner is just getting started.
-      </p>
-    </section>
-<section id="builds" style="padding:60px 0;">
-  <h2>🏰 Build Ideas</h2>
-
-  <div class="cards">
-
-   <div class="card">
-  <img
-    src="https://images.unsplash.com/photo-1605634542702-1b3c2b8b0d6a?auto=format&fit=crop&w=900&q=80"
-    alt="Starter Survival House"
-    style="width:100%;height:150px;object-fit:cover;border-radius:12px;margin-bottom:15px;"
-  >
-
-  <div class="icon">🏠</div>
-
-  <h3>Starter Survival House</h3>
-
-  <p>
-    Perfect house for your first Minecraft survival days.
-  </p>
-
-  <strong>Materials:</strong>
-
-  <p>
-    Oak Planks × 120<br>
-    Oak Logs × 35<br>
-    Glass × 24<br>
-    Cobblestone × 80<br>
-    Oak Stairs × 40
-  </p>
-</div>
-
-    <div class="card">
-      <div class="icon">🏰</div>
-      <h3>Medieval Castle</h3>
-      <p>A large medieval-style castle for your survival world.</p>
-      <strong>Materials:</strong>
-      <p>Stone Bricks × 600<br>
-      Cobblestone × 350<br>
-      Spruce Planks × 180<br>
-      Spruce Logs × 80<br>
-      Glass × 40</p>
+    <div class="logo">
+      ⛏️ <span>Mine</span>Planner
     </div>
 
-    <div class="card">
-      <div class="icon">🌾</div>
-      <h3>Automatic Farm</h3>
-      <p>A compact farm to help you produce food easily.</p>
-      <strong>Materials:</strong>
-      <p>Oak Planks × 50<br>
-      Water Bucket × 2<br>
-      Hopper × 2<br>
-      Chest × 2<br>
-      Redstone × 20</p>
+    <nav>
+      <button class="nav-btn active" data-page="home">Home</button>
+      <button class="nav-btn" data-page="builds">Builds</button>
+      <button class="nav-btn" data-page="crafting">Crafting</button>
+      <button class="nav-btn" data-page="survival">Survival</button>
+      <button class="nav-btn" data-page="daily">Daily</button>
+      <button class="nav-btn" data-page="seeds">Seeds</button>
+    </nav>
+
+  </div>
+</header>
+
+<main>
+
+<!-- HOME -->
+
+<section class="page active" id="home">
+
+  <div class="hero">
+
+    <div class="badge">MINECRAFT COMPANION</div>
+
+    <h1>
+      Plan Your <span>Minecraft</span> World
+    </h1>
+
+    <p>
+      Find builds, materials, crafting recipes, survival goals,
+      seeds and daily challenges — all in one place.
+    </p>
+
+    <div class="search">
+      <input
+        id="searchInput"
+        type="text"
+        placeholder="🔎 Search MinePlanner..."
+      >
     </div>
 
   </div>
+
+  <div class="section-head">
+    <h2>Explore MinePlanner</h2>
+    <p>Everything you need for your Minecraft journey.</p>
+  </div>
+
+  <div class="feature-grid">
+
+    <div class="feature" data-page-target="builds">
+      <div class="feature-icon">🏰</div>
+      <h3>Build Ideas</h3>
+      <p>
+        Discover Minecraft builds with required material lists.
+      </p>
+    </div>
+
+    <div class="feature" data-page-target="crafting">
+      <div class="feature-icon">🛠️</div>
+      <h3>Crafting Guide</h3>
+      <p>
+        Quickly find useful crafting recipes.
+      </p>
+    </div>
+
+    <div class="feature" data-page-target="survival">
+      <div class="feature-icon">✅</div>
+      <h3>Survival Checklist</h3>
+      <p>
+        Track your progress from your first night onward.
+      </p>
+    </div>
+
+    <div class="feature" data-page-target="daily">
+      <div class="feature-icon">🎯</div>
+      <h3>Daily Challenge</h3>
+      <p>
+        Get a Minecraft challenge every day.
+      </p>
+    </div>
+
+    <div class="feature" data-page-target="seeds">
+      <div class="feature-icon">🌱</div>
+      <h3>Seed Collection</h3>
+      <p>
+        Save interesting Minecraft worlds and seeds.
+      </p>
+    </div>
+
+    <div class="feature">
+      <div class="feature-icon">📦</div>
+      <h3>Materials</h3>
+      <p>
+        Keep track of materials required for your projects.
+      </p>
+    </div>
+
+  </div>
+
 </section>
-  </main>
 
-  <footer>
-    © 2026 MinePlanner • Minecraft Companion App
-  </footer>
 
-  <script>
-    const searchInput = document.getElementById("searchInput");
-    const cards = document.querySelectorAll(".card");
+<!-- BUILDS -->
 
-    searchInput.addEventListener("input", function () {
-      const search = this.value.toLowerCase().trim();
+<section class="page" id="builds">
 
-      cards.forEach(card => {
-        const name = card.dataset.name;
+  <div class="section-head">
+    <div>
+      <h2>🏰 Build Ideas</h2>
+      <p>Choose a build and check what materials you need.</p>
+    </div>
+  </div>
 
-        if (name.includes(search)) {
-          card.style.display = "";
-        } else {
-          card.style.display = "none";
-        }
-      });
-    });
-  </script>
+  <div class="build-grid">
+
+    <!-- BUILD 1 -->
+
+    <article class="build-card">
+
+      <div class="build-thumb">
+        <div class="scene sky">
+          <div class="sun"></div>
+          <div class="roof"></div>
+
+          <div class="house">
+            <div class="window left"></div>
+            <div class="window right"></div>
+            <div class="door"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="build-content">
+
+        <h3>🏠 Starter Survival House</h3>
+
+        <p class="desc">
+          A simple starter house perfect for the first days
+          of a survival world.
+        </p>
+
+        <div class="materials">
+
+          <div class="materials-title">
+            REQUIRED MATERIALS
+          </div>
+
+          <div class="material-list">
+            <span class="material">Oak Planks ×120</span>
+            <span class="material">Oak Logs ×35</span>
+            <span class="material">Glass ×24</span>
+            <span class="material">Cobblestone ×80</span>
+            <span class="material">Oak Stairs ×40</span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </article>
+
+
+    <!-- BUILD 2 -->
+
+    <article class="build-card">
+
+      <div class="build-thumb">
+
+        <div class="scene night">
+
+          <div class="sun" style="background:#ddd;width:32px;height:32px;top:25px;right:45px;"></div>
+
+          <div class="castle"></div>
+
+          <div class="tower left"></div>
+          <div class="tower right"></div>
+
+          <div class="tower-top" style="left:20%;bottom:145px;"></div>
+          <div class="tower-top" style="right:20%;left:auto;bottom:145px;"></div>
+
+        </div>
+
+      </div>
+
+      <div class="build-content">
+
+        <h3>🏰 Medieval Castle</h3>
+
+        <p class="desc">
+          A large medieval castle designed to become the
+          centerpiece of your survival base.
+        </p>
+
+        <div class="materials">
+
+          <div class="materials-title">
+            REQUIRED MATERIALS
+          </div>
+
+          <div class="material-list">
+            <span class="material">Stone Bricks ×600</span>
+            <span class="material">Cobblestone ×350</span>
+            <span class="material">Spruce Planks ×180</span>
+            <span class="material">Spruce Logs ×80</span>
+            <span class="material">Glass ×40</span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </article>
+
+
+    <!-- BUILD 3 -->
+
+    <article class="build-card">
+
+      <div class="build-thumb">
+
+        <div class="scene farm">
+
+          <div class="sun" style="width:40px;height:40px;top:18px;right:25px;"></div>
+
+          <div class="farm-house"></div>
+
+          <div class="crops"></div>
+
+        </div>
+
+      </div>
+
+      <div class="build-content">
+
+        <h3>🌾 Automatic Farm</h3>
+
+        <p class="desc">
+          A compact farm project for producing resources
+          efficiently in survival.
+        </p>
+
+        <div class="materials">
+
+          <div class="materials-title">
+            REQUIRED MATERIALS
+          </div>
+
+          <div class="material-list">
+            <span class="material">Oak Planks ×50</span>
+            <span class="material">Water Bucket ×2</span>
+            <span class="material">Hopper ×2</span>
+            <span class="material">Chest ×2</span>
+            <span class="material">Redstone ×20</span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </article>
+
+  </div>
+
+</section>
+
+
+<!-- CRAFTING -->
+
+<section class="page" id="crafting">
+
+  <div class="section-head">
+    <div>
+      <h2>🛠️ Crafting Guide</h2>
+      <p>Useful recipes for survival.</p>
+    </div>
+  </div>
+
+  <div class="recipe-grid">
+
+    <div class="recipe">
+      <div class="recipe-icon">🪣</div>
+      <h3>Bucket</h3>
+      <p>3 Iron Ingots</p>
+    </div>
+
+    <div class="recipe">
+      <div class="recipe-icon">📕</div>
+      <h3>Book</h3>
+      <p>3 Paper + 1 Leather</p>
+    </div>
+
+    <div class="recipe">
+      <div class="recipe-icon">✨</div>
+      <h3>Enchanting Table</h3>
+      <p>4 Obsidian + 2 Diamonds + 1 Book</p>
+    </div>
+
+    <div class="recipe">
+      <div class="recipe-icon">🧭</div>
+      <h3>Compass</h3>
+      <p>4 Iron Ingots + 1 Redstone</p>
+    </div>
+
+    <div class="recipe">
+      <div class="recipe-icon">📦</div>
+      <h3>Chest</h3>
+      <p>8 Wooden Planks</p>
+    </div>
+
+    <div class="recipe">
+      <div class="recipe-icon">🛡️</div>
+      <h3>Shield</h3>
+      <p>6 Wooden Planks + 1 Iron Ingot</p>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- SURVIVAL -->
+
+<section class="page" id="survival">
+
+  <div class="section-head">
+    <div>
+      <h2>✅ Survival Checklist</h2>
+      <p>Complete your goals and track your progress.</p>
+    </div>
+  </div>
+
+  <div class="panel">
+
+    <div class="list">
+
+      <label class="list-item">
+        <input type="checkbox">
+        <span>Collect your first wood</span>
+      </label>
+
+      <label class="list-item">
+        <input type="checkbox">
+        <span>Craft wooden tools</span>
+      </label>
+
+      <label class="list-item">
+        <input type="checkbox">
+        <span>Find stone and craft stone tools</span>
+      </label>
+
+      <label class="list-item">
+        <input type="checkbox">
+        <span>Collect iron</span>
+      </label>
+
+      <label class="list-item">
+        <input type="checkbox">
+        <span>Craft a shield</span>
+      </label>
+
+      <label class="list-item">
+        <input type="checkbox">
+        <span>Build a permanent base</span>
+      </label>
+
+      <label class="list-item">
+        <input type="checkbox">
+        <span>Find diamonds</span>
+      </label>
+
+      <label class="list-item">
+        <input type="checkbox">
+        <span>Build an enchanting table</span>
+      </label>
+
+      <label class="list-item">
+        <input type="checkbox">
+        <span>Enter the Nether</span>
+      </label>
+
+      <label class="list-item">
+        <input type="checkbox">
+        <span>Defeat the Ender Dragon</span>
+      </label>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- DAILY -->
+
+<section class="page" id="daily">
+
+  <div class="section-head">
+    <div>
+      <h2>🎯 Daily Challenge</h2>
+      <p>Today's Minecraft challenge.</p>
+    </div>
+  </div>
+
+  <div class="challenge">
+
+    <div class="challenge-icon">🔥</div>
+
+    <h2>Build Something Before Sunset</h2>
+
+    <p>
+      Start with an empty area and build a useful survival
+      structure before the next Minecraft sunset.
+    </p>
+
+  </div>
+
+</section>
+
+
+<!-- SEEDS -->
+
+<section class="page" id="seeds">
+
+  <div class="section-head">
+    <div>
+      <h2>🌱 Seed Collection</h2>
+      <p>Interesting seeds saved in MinePlanner.</p>
+    </div>
+  </div>
+
+  <div class="panel">
+
+    <div class="list">
+
+      <div class="list-item seed">
+        <span>🌳 Survival World</span>
+        <span class="seed-code">205966652304992</span>
+      </div>
+
+      <div class="list-item seed">
+        <span>🏔️ Mountain Start</span>
+        <span class="seed-code">COMING SOON</span>
+      </div>
+
+      <div class="list-item seed">
+        <span>🏘️ Village Start</span>
+        <span class="seed-code">COMING SOON</span>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+</main>
+
+
+<footer>
+  ⛏️ MinePlanner — Your Minecraft Companion
+</footer>
+
+
+<script>
+
+/* PAGE NAVIGATION */
+
+const navButtons =
+  document.querySelectorAll(".nav-btn");
+
+const pages =
+  document.querySelectorAll(".page");
+
+function showPage(pageId){
+
+  pages.forEach(page=>{
+    page.classList.remove("active");
+  });
+
+  const target =
+    document.getElementById(pageId);
+
+  if(target){
+    target.classList.add("active");
+  }
+
+  navButtons.forEach(button=>{
+    button.classList.remove("active");
+
+    if(button.dataset.page === pageId){
+      button.classList.add("active");
+    }
+  });
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+}
+
+navButtons.forEach(button=>{
+  button.addEventListener("click",()=>{
+    showPage(button.dataset.page);
+  });
+});
+
+
+/* HOME FEATURE BUTTONS */
+
+document.querySelectorAll("[data-page-target]")
+.forEach(card=>{
+
+  card.addEventListener("click",()=>{
+    showPage(card.dataset.pageTarget);
+  });
+
+});
+
+
+/* SEARCH */
+
+const searchInput =
+  document.getElementById("searchInput");
+
+searchInput.addEventListener("keydown",function(event){
+
+  if(event.key !== "Enter"){
+    return;
+  }
+
+  const query =
+    this.value.toLowerCase().trim();
+
+  if(query.includes("build")){
+    showPage("builds");
+  }
+
+  else if(
+    query.includes("craft") ||
+    query.includes("recipe")
+  ){
+    showPage("crafting");
+  }
+
+  else if(
+    query.includes("survival") ||
+    query.includes("checklist")
+  ){
+    showPage("survival");
+  }
+
+  else if(
+    query.includes("daily") ||
+    query.includes("challenge")
+  ){
+    showPage("daily");
+  }
+
+  else if(
+    query.includes("seed")
+  ){
+    showPage("seeds");
+  }
+
+});
+
+
+/* SURVIVAL CHECKBOX SAVE */
+
+const checkboxes =
+  document.querySelectorAll(
+    '.list-item input[type="checkbox"]'
+  );
+
+checkboxes.forEach((box,index)=>{
+
+  const saved =
+    localStorage.getItem(
+      "mineplanner-check-" + index
+    );
+
+  if(saved === "true"){
+    box.checked = true;
+  }
+
+  box.addEventListener("change",()=>{
+
+    localStorage.setItem(
+      "mineplanner-check-" + index,
+      box.checked
+    );
+
+  });
+
+});
+
+</script>
 
 </body>
 </html>
